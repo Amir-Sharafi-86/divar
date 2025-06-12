@@ -1,59 +1,64 @@
 import { getAllCities } from "../../utils/shared.js";
-import { saveInLocalStorage , getLocalStorage } from "../../utils/utils.js";
+import { saveInLocalStorage } from "../../utils/utils.js";
+
 window.addEventListener("load", () => {
-  const loadingContainer  = document.querySelector ("#loading-container")
-  loadingContainer.style.display = 'none'
+  const loadingContainer = document.querySelector("#loading-container");
+
   getAllCities().then((response) => {
-    console.log(response.data.cities);
-    
+    loadingContainer.style.display = "none";
     const popularCitiesContainer = document.querySelector("#popular-cities");
     const searchInput = document.querySelector("#search-input");
-    const searchContainer = document.querySelector(".search-result-cities");
+    const searchResult = document.querySelector(".search-result-cities");
+
+    searchInput.addEventListener("keyup", (event) => {
+      if (event.target.value.length) {
+        searchResult.classList.add("active");
+
+        const searchResultCities = response.data.cities.filter((city) =>
+          city.name.startsWith(event.target.value)
+        );
+
+        if (searchResultCities.length) {
+          searchResult.innerHTML = "";
+          searchResultCities.forEach((city) => {
+            searchResult.insertAdjacentHTML(
+              "beforeend",
+              `
+                <li onclick="cityClickHandler('${city.name}', '${city.id}')">${city.name}</li>
+              `
+            );
+          });
+        } else {
+          searchResult.innerHTML = "";
+          searchResult.insertAdjacentHTML(
+            "beforeend",
+            `
+              <img src="https://support-faq.divarcdn.com/web/2024/03/static/media/magnifier.7f88b2e3f8ae30f4333986d0b0fbcf1d.svg" />
+              <p class="empty">نتیجه‌ای برای جستجوی شما پیدا نشد.</p>
+            `
+          );
+        }
+      } else {
+        searchResult.classList.remove("active");
+      }
+    });
+
     const popularCities = response.data.cities.filter((city) => city.popular);
 
-    searchInput.addEventListener("keyup" , (e) => {
-        if(e.target.value.length) {
-          searchContainer.classList.add("active")
-          const filtredCity =   response.data.cities.filter(city => {
-          const searchesValue = searchInput.value 
-          return city.name.startsWith(searchesValue)          
-          })
-          if(filtredCity.length) {
-            searchContainer.innerHTML = "" ;
-            filtredCity.forEach(item => {
-              searchContainer.innerHTML = "" ;
-              searchContainer.insertAdjacentHTML("beforeend" , `
-                <li onclick="clickHandler('${item.name} , ${item.id}')" >${item.name}</li>
-                `)        
-            });        
-          }
-          else {
-            searchContainer.innerHTML = "" ;
-            searchContainer.insertAdjacentHTML("beforeend" , `
-              <li>همچین شهری یافت نشد </li>
-              `)
-          }
-        }
-        else {
-          searchContainer.classList.remove("active")
-        }
-        
-    })
-
     popularCities.forEach((city) => {
-      
       popularCitiesContainer.insertAdjacentHTML(
         "beforeend",
-    `
-        <li class="main__cities-item">
-            <a href="/pages/posts.html" class="main__cities-link" onclick="clickHandler('${city.name} ${city.id}')" >${city.name}</a>
+        `
+        <li class="main__cities-item" onclick="cityClickHandler('${city.name}', '${city.id}')">
+            <p class="main__cities-link">${city.name}</p>
         </li>
       `
       );
     });
-    window.clickHandler = (cityID , cityName) => {
-      console.log(cityID , cityName);
-      saveInLocalStorage("cities" , {title : cityName , id: cityID}  )
+
+    window.cityClickHandler = (cityName, cityID) => {
+      saveInLocalStorage('city', {name: cityName, id: cityID})
+      location.href = '/pages/posts.html'
     }
   });
 });

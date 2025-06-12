@@ -1,5 +1,5 @@
-import { getAllSocialMedia } from "../../utils/shared.js";
+import { getAndShowSocials } from "../../utils/shared.js";
 
-window.addEventListener("load" , () => {
-  getAllSocialMedia() ;
-})
+window.addEventListener("load", () => {
+  getAndShowSocials();
+});

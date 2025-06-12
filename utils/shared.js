@@ -1,32 +1,27 @@
-const baseUrl = "https://divarapi.liara.run"
+const baseUrl = "https://divarapi.liara.run";
 
 const getAllCities = async () => {
-    const res = await fetch(`${baseUrl}/v1/location`)
-    const cities = await res.json()
+  const res = await fetch(`${baseUrl}/v1/location`);
+  const cities = await res.json();
 
-    return cities
-}
+  return cities;
+};
 
-const getAllSocialMedia = async () => {
-    const footer__social__media = document.querySelector("#footer__social-media")
+const getAndShowSocials = async () => {
+  const socialMediaContainer = document.querySelector("#footer__social-media");
+  const res = await fetch(`${baseUrl}/v1/social`);
+  const socialsResponse = await res.json();
 
-    const res = await  fetch(`${baseUrl}/v1/social`)
-    const data = await res.json() ;
+  socialsResponse.data.socials.forEach((social) => {
+    socialMediaContainer.insertAdjacentHTML(
+      "beforeend",
+      `
+        <a href="${social.link}" class="sidebar__icon-link">
+            <img width="18px" height="18px" alt="${social.name}" src="${social.icon}" class="sidebar__icon bi bi-twitter" />
+        </a>
+      `
+    );
+  });
+};
 
-    data.data.socials.forEach(social => {
-        console.log(social);
-        
-        footer__social__media.insertAdjacentHTML("beforeend" , `
-            <a href="${social.link}" >
-              <img src="${social.icon}" alt="">
-            
-            </a>
-            `)
-    });    
-}
-
-export {
-    getAllSocialMedia , 
-    baseUrl,
-    getAllCities
-}
+export { baseUrl, getAllCities, getAndShowSocials };
