@@ -3,7 +3,7 @@ const saveInLocalStorage = (key , value) => {
 }
 
 const getLocalStorage = (key) => {
-  localStorage.getItem(key)
+ return localStorage.getItem(key)
 }
 
 export {

@@ -23,7 +23,7 @@ window.addEventListener("load", () => {
             filtredCity.forEach(item => {
               searchContainer.innerHTML = "" ;
               searchContainer.insertAdjacentHTML("beforeend" , `
-                <li>${item.name}</li>
+                <li onclick="clickHandler('${item.name} , ${item.id}')" >${item.name}</li>
                 `)        
             });        
           }
@@ -46,7 +46,7 @@ window.addEventListener("load", () => {
         "beforeend",
     `
         <li class="main__cities-item">
-            <p class="main__cities-link" onclick="clickHandler('${city.name} ${city.id}')" >${city.name}</p>
+            <a href="/pages/posts.html" class="main__cities-link" onclick="clickHandler('${city.name} ${city.id}')" >${city.name}</a>
         </li>
       `
       );
