@@ -1,5 +1,5 @@
 import { getAllCities } from "../../utils/shared.js";
-
+import { saveInLocalStorage , getLocalStorage } from "../../utils/utils.js";
 window.addEventListener("load", () => {
   const loadingContainer  = document.querySelector ("#loading-container")
   loadingContainer.style.display = 'none'
@@ -41,14 +41,19 @@ window.addEventListener("load", () => {
     })
 
     popularCities.forEach((city) => {
+      
       popularCitiesContainer.insertAdjacentHTML(
         "beforeend",
     `
         <li class="main__cities-item">
-            <p class="main__cities-link">${city.name}</p>
+            <p class="main__cities-link" onclick="clickHandler('${city.name} ${city.id}')" >${city.name}</p>
         </li>
       `
       );
     });
+    window.clickHandler = (cityID , cityName) => {
+      console.log(cityID , cityName);
+      saveInLocalStorage("cities" , {title : cityName , id: cityID}  )
+    }
   });
 });
