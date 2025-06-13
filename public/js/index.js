@@ -57,8 +57,8 @@ window.addEventListener("load", () => {
     });
 
     window.cityClickHandler = (cityName, cityID) => {
-      saveInLocalStorage('city', {name: cityName, id: cityID})
-      location.href = '/pages/posts.html'
-    }
+      saveInLocalStorage("cities", [{ name: cityName, id: cityID }]);
+      location.href = "/pages/posts.html";
+    };
   });
 });
