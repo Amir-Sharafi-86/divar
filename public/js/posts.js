@@ -1,5 +1,5 @@
 import { baseUrl, getPostCategories, getPosts } from "../../utils/shared.js";
-import { getFromLocalStorage } from "../../utils/utils.js";
+import { getFromLocalStorage , addParamToUrl } from "../../utils/utils.js";
 
 window.addEventListener("load", () => {
   const loadingContainer = document.querySelector("#loading-container");
@@ -14,7 +14,7 @@ window.addEventListener("load", () => {
     generatePosts(posts);
   });
 
-  const generatePosts = (posts) => {
+    const generatePosts = (posts) => {
     const postsContainer = document.querySelector("#posts-container");
     if (posts.length) {
       posts.forEach((post) => {
@@ -68,6 +68,11 @@ window.addEventListener("load", () => {
     }
   };
 
+
+  window.categoryID = (categoryID) => {
+    addParamToUrl("categoryID" , categoryID)
+  }
+
   getPostCategories().then((categories) => {
     const categoriesContainer = document.querySelector("#categories-container");
     loadingContainer.style.display = "none";
@@ -79,7 +84,7 @@ window.addEventListener("load", () => {
         "beforeend",
         `
           <div class="sidebar__category-link" id="category-${category._id}">
-            <div class="sidebar__category-link_details">
+            <div class="sidebar__category-link_details" onclick="categoryID('${category._id}')" >
               <i class="sidebar__category-icon bi bi-house"></i>
               <p>${category.title}</p>
             </div>
