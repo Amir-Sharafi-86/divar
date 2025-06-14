@@ -25,8 +25,6 @@ const getAndShowSocials = async () => {
 };
 
 const getPosts = async (citiesIDs) => {
-  console.log(citiesIDs);
-  
   const url = `${baseUrl}/v1/post/?city=${citiesIDs}`;
 
   const res = await fetch(url);
@@ -35,4 +33,17 @@ const getPosts = async (citiesIDs) => {
   return posts;
 };
 
-export { baseUrl, getAllCities, getAndShowSocials, getPosts };
+const getPostCategories = async () => {
+  const res = await fetch(`${baseUrl}/v1/category`);
+  const response = await res.json();
+
+  return response.data.categories;
+};
+
+export {
+  baseUrl,
+  getAllCities,
+  getAndShowSocials,
+  getPosts,
+  getPostCategories,
+};
