@@ -1,7 +1,15 @@
 import { baseUrl, getPostCategories, getPosts } from "../../utils/shared.js";
-import { getFromLocalStorage , addParamToUrl } from "../../utils/utils.js";
+import {
+  addParamToUrl,
+  calcuteRelativeTimeDifference,
+  getFromLocalStorage,
+  getUrlParam
+} from "../../utils/utils.js";
 
 window.addEventListener("load", () => {
+  const getCategoryID = getUrlParam("categoryID")
+  console.log(getCategoryID);
+    
   const loadingContainer = document.querySelector("#loading-container");
 
   const cities = getFromLocalStorage("cities");
@@ -14,10 +22,11 @@ window.addEventListener("load", () => {
     generatePosts(posts);
   });
 
-    const generatePosts = (posts) => {
+  const generatePosts = (posts) => {
     const postsContainer = document.querySelector("#posts-container");
     if (posts.length) {
       posts.forEach((post) => {
+        const date = calcuteRelativeTimeDifference(post.createdAt);
         postsContainer.insertAdjacentHTML(
           "beforeend",
           `
@@ -38,7 +47,7 @@ window.addEventListener("load", () => {
                           : post.price.toLocaleString() + " تومان"
                       }
                     </span>
-                    <span class="product-card__time">Date</span>
+                    <span class="product-card__time">${date}</span>
                   </div>
                 </div>
                 <div class="product-card__left">
@@ -68,29 +77,33 @@ window.addEventListener("load", () => {
     }
   };
 
-
-  window.categoryID = (categoryID) => {
-    addParamToUrl("categoryID" , categoryID)
-  }
+  window.categoryClickHandler = (categoryID) => {
+    addParamToUrl("categoryID", categoryID);
+  };
 
   getPostCategories().then((categories) => {
     const categoriesContainer = document.querySelector("#categories-container");
     loadingContainer.style.display = "none";
 
     categoriesContainer.innerHTML = "";
-
-    categories.forEach((category) => {
-      categoriesContainer.insertAdjacentHTML(
-        "beforeend",
-        `
-          <div class="sidebar__category-link" id="category-${category._id}">
-            <div class="sidebar__category-link_details" onclick="categoryID('${category._id}')" >
-              <i class="sidebar__category-icon bi bi-house"></i>
-              <p>${category.title}</p>
+    if(getCategoryID) {
+    const categoryInfos = categories.filter(category => category._id === categoryID)
+    console.log(categoryInfos);
+    }
+    else {
+      categories.forEach((category) => {
+        categoriesContainer.insertAdjacentHTML(
+          "beforeend",
+          `
+            <div class="sidebar__category-link" id="category-${category._id}">
+              <div class="sidebar__category-link_details" onclick="categoryClickHandler('${category._id}')">
+                <i class="sidebar__category-icon bi bi-house"></i>
+                <p>${category.title}</p>
+              </div>
             </div>
-          </div>
-        `
-      );
-    });
+          `
+        );
+      });
+    }
   });
 });
