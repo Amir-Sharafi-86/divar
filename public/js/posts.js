@@ -3,13 +3,11 @@ import {
   addParamToUrl,
   calcuteRelativeTimeDifference,
   getFromLocalStorage,
-  getUrlParam
+  getUrlParam,
 } from "../../utils/utils.js";
 
 window.addEventListener("load", () => {
-  const getCategoryID = getUrlParam("categoryID")
-  console.log(getCategoryID);
-    
+  const categoryID = getUrlParam("categoryID");
   const loadingContainer = document.querySelector("#loading-container");
 
   const cities = getFromLocalStorage("cities");
@@ -86,36 +84,70 @@ window.addEventListener("load", () => {
     loadingContainer.style.display = "none";
 
     categoriesContainer.innerHTML = "";
-    if(getCategoryID) {
-    const categoryInfos = categories.filter(category => category._id === getCategoryID)
-    console.log(categoryInfos);
 
-    if(!categoryInfos.length) {
+    if (categoryID) {
+      const categoryInfos = categories.filter(
+        (category) => category._id === categoryID
+      );
 
-    }
-    else {
-      categoryInfos.forEach(data => {
-        categoriesContainer.insertAdjacentHTML("beforeend" , `
-          <div class="all-categories">
-                <p class="">همه اگهی ها</p>
+      if (!categoryInfos.length) {
+        const subCategory = findSubCategoryById(categories, categoryID);
+
+        console.log("subCategory ->", subCategory);
+
+        if (subCategory) {
+          categoriesContainer.insertAdjacentHTML(
+            "beforeend",
+            `
+                <div class="all-categories">
+                  <p>همه اگهی ها</p>
+                  <i class="bi bi-arrow-right"></i>
+                </div>
+                <div
+                  class="sidebar__category-link active-category"
+                  href="#"
+                  id="category-${subCategory._id}"
+                >
+                  <div class="sidebar__category-link_details">
+                    <i class="sidebar__category-icon bi bi-house"></i>
+                    <p>${subCategory.title}</p>
+                  </div>
+                  <ul class="subCategory-list">
+                    ${subCategory.subCategories
+                      .map(createSubCategoryHtml)
+                      .join("")}
+                  </ul>
+                </div>
+            `
+          );
+        } else {
+          // SubSubCategory :))
+        }
+      } else {
+        categoryInfos.forEach((category) => {
+          categoriesContainer.insertAdjacentHTML(
+            "beforeend",
+            `
+              <div class="all-categories">
+                <p>همه اگهی ها</p>
                 <i class="bi bi-arrow-right"></i>
               </div>
 
               <div class="sidebar__category-link active-category" href="#">
                 <div class="sidebar__category-link_details">
                   <i class="sidebar__category-icon bi bi-house"></i>
-                  <p>${data.title}</p>
+                  <p>${category.title}</p>
                 </div>
                 <ul class="subCategory-list">
-                  ${data.subCategories.map(createSubCategoryHtml).join("")}
+                  ${category.subCategories.map(createSubCategoryHtml).join("")}
                 </ul>
               </div>
-          `)
-      })
-    }
-    }
-    
-    else {
+          
+            `
+          );
+        });
+      }
+    } else {
       categories.forEach((category) => {
         categoriesContainer.insertAdjacentHTML(
           "beforeend",
@@ -134,8 +166,21 @@ window.addEventListener("load", () => {
 
   const createSubCategoryHtml = (subCategory) => {
     return `
-    <li>${subCategory.title}</li>
-    `
-  }
+      <li class="${categoryID === subCategory._id ? "active-subCategory" : ""}"
+        onclick="categoryClickHandler('${subCategory._id}')"
+      >
+        ${subCategory.title}
+      </li>
+    `;
+  };
 
+  const findSubCategoryById = (categories, categoryID) => {
+    const allSubCategories = categories.flatMap(
+      (category) => category.subCategories
+    );
+
+    return allSubCategories.find(
+      (subCategory) => subCategory._id === categoryID
+    );
+  };
 });
