@@ -87,9 +87,34 @@ window.addEventListener("load", () => {
 
     categoriesContainer.innerHTML = "";
     if(getCategoryID) {
-    const categoryInfos = categories.filter(category => category._id === categoryID)
+    const categoryInfos = categories.filter(category => category._id === getCategoryID)
     console.log(categoryInfos);
+
+    if(!categoryInfos.length) {
+
     }
+    else {
+      categoryInfos.forEach(data => {
+        categoriesContainer.insertAdjacentHTML("beforeend" , `
+          <div class="all-categories">
+                <p class="">همه اگهی ها</p>
+                <i class="bi bi-arrow-right"></i>
+              </div>
+
+              <div class="sidebar__category-link active-category" href="#">
+                <div class="sidebar__category-link_details">
+                  <i class="sidebar__category-icon bi bi-house"></i>
+                  <p>${data.title}</p>
+                </div>
+                <ul class="subCategory-list">
+                  ${data.subCategories.map(createSubCategoryHtml).join("")}
+                </ul>
+              </div>
+          `)
+      })
+    }
+    }
+    
     else {
       categories.forEach((category) => {
         categoriesContainer.insertAdjacentHTML(
@@ -106,4 +131,11 @@ window.addEventListener("load", () => {
       });
     }
   });
+
+  const createSubCategoryHtml = (subCategory) => {
+    return `
+    <li>${subCategory.title}</li>
+    `
+  }
+
 });
