@@ -95,7 +95,50 @@ window.addEventListener("load", () => {
 
       if (!categoryInfos.length) {
         const subCategory = findSubCategoryById(categories, categoryID);
+        const sidebarFilters = document.getElementById("sidebar-filters")
+        subCategory.filters.forEach(filter =>  {
 
+          if(filter.type === "selectbox") {
+            sidebarFilters.insertAdjacentHTML("beforebegin" , `
+                <div class="accordion accordion-flush" id="accordionFlushExample">
+                  <div class="accordion-item">
+                    <h2 class="accordion-header">
+                      <button
+                        class="accordion-button collapsed"
+                        type="button"
+                        data-bs-toggle="collapse"
+                        data-bs-target="#accordion-${filter.slug}"
+                        aria-expanded="false"
+                        aria-controls="accordion-${filter.name}"
+                      >
+                        <span class="sidebar__filter-title">${
+                          filter.name
+                        }</span>
+                      </button>
+                    </h2>
+                    <div
+                      id="accordion-${filter.slug}"
+                      class="accordion-collapse collapse"
+                      aria-labelledby="accordion-${filter.name}"
+                      data-bs-parent="#accordionFlushExample"
+                    >
+                      <div class="accordion-body">
+                        <select class="selectbox">
+                          ${filter.options
+                            .sort((a, b) => b - a)
+                            .map(
+                              (option) =>
+                                `<option value='${option}'>${option}</option>`
+                            )}
+                        </select>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              `)
+          }          
+        })
+        
         console.log("subCategory ->", subCategory);
 
         if (subCategory) {
