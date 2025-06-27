@@ -8,6 +8,9 @@ import {
 
 window.addEventListener("load", () => {
   const categoryID = getUrlParam("categoryID");
+  const searchValue = getUrlParam("value");
+  console.log(searchValue);
+  
   const loadingContainer = document.querySelector("#loading-container");
 
   const cities = getFromLocalStorage("cities");
@@ -183,4 +186,14 @@ window.addEventListener("load", () => {
       (subCategory) => subCategory._id === categoryID
     );
   };
+
+  
+  if(searchValue)  {
+    const remove_search_value_icon = document.querySelector("#remove-search-value-icon")
+    const global_search_input = document.getElementById("global_search_input")
+    
+    global_search_input.value = searchValue
+    remove_search_value_icon.style.display = "block"
+   }
+
 });
