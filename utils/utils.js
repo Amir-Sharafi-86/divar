@@ -21,6 +21,13 @@ const getUrlParam = (param) => {
   return urlParams.get(param);
 };
 
+const removeParamFromUrl = (param) => {
+  const url = new URL(location.href);
+  url.searchParams.delete(param);
+  window.history.replaceState(null, null, url);
+  location.reload();
+};
+
 const calcuteRelativeTimeDifference = (createdAt) => {
   const currentTime = new Date();
   const createdTime = new Date(createdAt);
@@ -42,4 +49,5 @@ export {
   addParamToUrl,
   getUrlParam,
   calcuteRelativeTimeDifference,
+  removeParamFromUrl,
 };

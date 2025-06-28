@@ -1,18 +1,18 @@
 import { getAndShowSocials } from "../../utils/shared.js";
+import { addParamToUrl } from "../../utils/utils.js";
 
 window.addEventListener("load", () => {
   getAndShowSocials();
-  
-  
-  
-    const global_search_input = document.getElementById("global_search_input")
-    console.log(global_search_input);
-    global_search_input?.addEventListener("keyup" , (e) => {
-        if(e.keyCode === 13)  {
-          e.preventDefault() ;
-          location.href = "posts.html"
-          location.href = `posts.html?value=${e.target.value}`   
-        }
-    })
 
+  const globalSearchInput = document.querySelector("#global_search_input");
+
+  globalSearchInput?.addEventListener("keyup", (event) => {
+    if (event.keyCode === 13) {
+      event.preventDefault();
+      if (event.target.value.trim()) {
+        // location.href = `posts.html?value=${event.target.value.trim()}`;
+        addParamToUrl("value", event.target.value.trim());
+      }
+    }
+  });
 });

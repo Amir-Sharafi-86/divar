@@ -4,13 +4,12 @@ import {
   calcuteRelativeTimeDifference,
   getFromLocalStorage,
   getUrlParam,
+  removeParamFromUrl,
 } from "../../utils/utils.js";
 
 window.addEventListener("load", () => {
   const categoryID = getUrlParam("categoryID");
   const searchValue = getUrlParam("value");
-  console.log(searchValue);
-  
   const loadingContainer = document.querySelector("#loading-container");
 
   const cities = getFromLocalStorage("cities");
@@ -39,7 +38,7 @@ window.addEventListener("load", () => {
                   </div>
                   <div class="product-card__right-bottom">
                     <span class="product-card__condition">${
-                      post.dynamicFields[0].data
+                      post.dynamicFields[0]?.data
                     }</span>
                     <span class="product-card__price">
                       ${
@@ -82,6 +81,10 @@ window.addEventListener("load", () => {
     addParamToUrl("categoryID", categoryID);
   };
 
+  window.backToAllCategories = () => {
+    removeParamFromUrl("categoryID");
+  };
+
   getPostCategories().then((categories) => {
     const categoriesContainer = document.querySelector("#categories-container");
     loadingContainer.style.display = "none";
@@ -95,57 +98,14 @@ window.addEventListener("load", () => {
 
       if (!categoryInfos.length) {
         const subCategory = findSubCategoryById(categories, categoryID);
-        const sidebarFilters = document.getElementById("sidebar-filters")
-        subCategory.filters.forEach(filter =>  {
 
-          if(filter.type === "selectbox") {
-            sidebarFilters.insertAdjacentHTML("beforebegin" , `
-                <div class="accordion accordion-flush" id="accordionFlushExample">
-                  <div class="accordion-item">
-                    <h2 class="accordion-header">
-                      <button
-                        class="accordion-button collapsed"
-                        type="button"
-                        data-bs-toggle="collapse"
-                        data-bs-target="#accordion-${filter.slug}"
-                        aria-expanded="false"
-                        aria-controls="accordion-${filter.name}"
-                      >
-                        <span class="sidebar__filter-title">${
-                          filter.name
-                        }</span>
-                      </button>
-                    </h2>
-                    <div
-                      id="accordion-${filter.slug}"
-                      class="accordion-collapse collapse"
-                      aria-labelledby="accordion-${filter.name}"
-                      data-bs-parent="#accordionFlushExample"
-                    >
-                      <div class="accordion-body">
-                        <select class="selectbox">
-                          ${filter.options
-                            .sort((a, b) => b - a)
-                            .map(
-                              (option) =>
-                                `<option value='${option}'>${option}</option>`
-                            )}
-                        </select>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              `)
-          }          
-        })
-        
-        console.log("subCategory ->", subCategory);
+        subCategory?.filters.forEach((filter) => filterGenerator(filter));
 
         if (subCategory) {
           categoriesContainer.insertAdjacentHTML(
             "beforeend",
             `
-                <div class="all-categories">
+                <div class="all-categories" onclick="backToAllCategories()">
                   <p>همه اگهی ها</p>
                   <i class="bi bi-arrow-right"></i>
                 </div>
@@ -167,14 +127,43 @@ window.addEventListener("load", () => {
             `
           );
         } else {
-          // SubSubCategory :))
+          const subSubCategory = findSubSubCategoryById(categories, categoryID);
+          const subSubCategoryParent = findSubCategoryById(
+            categories,
+            subSubCategory.parent
+          );
+
+          subSubCategory?.filters.forEach((filter) => filterGenerator(filter));
+
+          categoriesContainer.insertAdjacentHTML(
+            "beforeend",
+            `
+              <div class="all-categories" onclick="backToAllCategories()">
+                <p>همه اگهی ها</p>
+                <i class="bi bi-arrow-right"></i>
+              </div>
+              <div class="sidebar__category-link active-category" href="#" onclick="categoryClickHandler('${
+                subSubCategoryParent._id
+              }')">
+                <div class="sidebar__category-link_details">
+                  <i class="sidebar__category-icon bi bi-house"></i>
+                  <p>${subSubCategoryParent.title}</p>
+                </div>
+                <ul class="subCategory-list">
+                  ${subSubCategoryParent.subCategories
+                    .map(createSubCategoryHtml)
+                    .join("")}
+                </ul>
+              </div>
+            `
+          );
         }
       } else {
         categoryInfos.forEach((category) => {
           categoriesContainer.insertAdjacentHTML(
             "beforeend",
             `
-              <div class="all-categories">
+              <div class="all-categories" onclick="backToAllCategories()">
                 <p>همه اگهی ها</p>
                 <i class="bi bi-arrow-right"></i>
               </div>
@@ -230,13 +219,97 @@ window.addEventListener("load", () => {
     );
   };
 
-  
-  if(searchValue)  {
-    const remove_search_value_icon = document.querySelector("#remove-search-value-icon")
-    const global_search_input = document.getElementById("global_search_input")
-    
-    global_search_input.value = searchValue
-    remove_search_value_icon.style.display = "block"
-   }
+  const findSubSubCategoryById = (categories, categoryID) => {
+    const allSubCategories = categories.flatMap(
+      (category) => category.subCategories
+    );
 
+    const allSubSubCategories = allSubCategories.flatMap(
+      (subCategory) => subCategory.subCategories
+    );
+
+    return allSubSubCategories.find(
+      (subSubCategory) => subSubCategory._id === categoryID
+    );
+  };
+
+  const filterGenerator = (filter) => {
+    console.log("Filter ->", filter);
+    const sidebarFiltersContainer = document.querySelector("#sidebar-filters");
+
+    sidebarFiltersContainer.insertAdjacentHTML(
+      "beforebegin",
+      `
+        ${
+          filter.type === "selectbox"
+            ? `
+                <div class="accordion accordion-flush" id="accordionFlushExample">
+                  <div class="accordion-item">
+                    <h2 class="accordion-header">
+                      <button
+                        class="accordion-button collapsed"
+                        type="button"
+                        data-bs-toggle="collapse"
+                        data-bs-target="#accordion-${filter.slug}"
+                        aria-expanded="false"
+                        aria-controls="accordion-${filter.name}"
+                      >
+                        <span class="sidebar__filter-title">${
+                          filter.name
+                        }</span>
+                      </button>
+                    </h2>
+                    <div
+                      id="accordion-${filter.slug}"
+                      class="accordion-collapse collapse"
+                      aria-labelledby="accordion-${filter.name}"
+                      data-bs-parent="#accordionFlushExample"
+                    >
+                      <div class="accordion-body">
+                        <select class="selectbox">
+                          ${filter.options
+                            .sort((a, b) => b - a)
+                            .map(
+                              (option) =>
+                                `<option value='${option}'>${option}</option>`
+                            )}
+                        </select>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              `
+            : ""
+        }
+
+        ${
+          filter.type === "checkbox"
+            ? `
+                <div class="sidebar__filter">
+                  <label class="switch">
+                    <input id="exchange_controll" class="icon-controll" type="checkbox" />
+                    <span class="slider round"></span>
+                  </label>
+                  <p>${filter.name}</p>
+                </div>
+              `
+            : ""
+        }
+      `
+    );
+  };
+
+  const removeSearchValueIcon = document.querySelector(
+    "#remove-search-value-icon"
+  );
+
+  if (searchValue) {
+    const searchInput = document.querySelector("#global_search_input");
+    searchInput.value = searchValue;
+    removeSearchValueIcon.style.display = "block";
+  }
+
+  removeSearchValueIcon.addEventListener("click", () => {
+    removeParamFromUrl("value");
+  });
 });

@@ -1,3 +1,5 @@
+import { getUrlParam } from "./utils.js";
+
 const baseUrl = "https://divarapi.liara.run";
 
 const getAllCities = async () => {
@@ -25,7 +27,12 @@ const getAndShowSocials = async () => {
 };
 
 const getPosts = async (citiesIDs) => {
-  const url = `${baseUrl}/v1/post/?city=${citiesIDs}`;
+  const categoryID = getUrlParam("categoryID")
+  let url = `${baseUrl}/v1/post/?city=${citiesIDs}`;
+
+  if(categoryID) {
+    url+= `&categoryId=${categoryID}`
+  }
 
   const res = await fetch(url);
   const posts = await res.json();
