@@ -27,13 +27,20 @@ const getAndShowSocials = async () => {
 };
 
 const getPosts = async (citiesIDs) => {
-  const categoryID = getUrlParam("categoryID")
+  const categoryID = getUrlParam("categoryID");
+  const searchValue  = getUrlParam("value");
+  console.log(searchValue);
+  
   let url = `${baseUrl}/v1/post/?city=${citiesIDs}`;
 
-  if(categoryID) {
-    url+= `&categoryId=${categoryID}`
+  console.log("categoryID ->", categoryID);
+  if (categoryID) {
+    url += `&categoryId=${categoryID}`;
   }
+  if(searchValue) {
+    url += `&search=${searchValue}`;
 
+  }
   const res = await fetch(url);
   const posts = await res.json();
 
