@@ -1,10 +1,15 @@
-import { getUrlParam } from "./utils.js";
+import {
+  getFromLocalStorage,
+  getUrlParam,
+  saveInLocalStorage,
+} from "./utils.js";
+
 const baseUrl = "https://divarapi.liara.run";
 
 const getAllCities = async () => {
   const res = await fetch(`${baseUrl}/v1/location`);
   const cities = await res.json();
-  
+
   return cities;
 };
 
@@ -25,6 +30,25 @@ const getAndShowSocials = async () => {
   });
 };
 
+const getAndShowHeaderCityLocation = async () => {
+  const headerCityTitle = document.querySelector("#header-city-title");
+  const cities = getFromLocalStorage("cities");
+
+  if (headerCityTitle) {
+    if (!cities) {
+      saveInLocalStorage("cities", [{ title: "تهران", id: 301 }]);
+      const cities = getFromLocalStorage("cities");
+      headerCityTitle.innerHTML = cities[0].title;
+    } else {
+      if (cities.length === 1) {
+        headerCityTitle.innerHTML = cities[0].title;
+      } else {
+        headerCityTitle.innerHTML = `${cities.length} شهر`;
+      }
+    }
+  }
+};
+
 const getPosts = async (citiesIDs) => {
   const categoryID = getUrlParam("categoryID");
   const searchValue = getUrlParam("value");
@@ -40,7 +64,7 @@ const getPosts = async (citiesIDs) => {
 
   const res = await fetch(url);
   const posts = await res.json();
-  
+
   return posts;
 };
 
@@ -57,5 +81,5 @@ export {
   getAndShowSocials,
   getPosts,
   getPostCategories,
-  
+  getAndShowHeaderCityLocation,
 };

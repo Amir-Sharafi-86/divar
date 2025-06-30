@@ -16,13 +16,15 @@ window.addEventListener("load", () => {
 
   let posts = null;
   let backupPosts = null;
+  let appliedFilters = {}; // key-value karkard: 90 / tolid: 1396
 
   getPosts(cities[0].id).then((response) => {
     loadingContainer.style.display = "none";
+
     posts = response.data.posts;
-    console.log(posts);
-    
     backupPosts = response.data.posts;
+
+    console.log("Posts ->", posts);
 
     generatePosts(posts);
   });
@@ -32,7 +34,7 @@ window.addEventListener("load", () => {
 
     postsContainer.innerHTML = "";
 
-    if (posts.length) {
+    if (posts?.length) {
       posts.forEach((post) => {
         const date = calcuteRelativeTimeDifference(post.createdAt);
         postsContainer.insertAdjacentHTML(
@@ -274,7 +276,9 @@ window.addEventListener("load", () => {
                       data-bs-parent="#accordionFlushExample"
                     >
                       <div class="accordion-body">
-                        <select class="selectbox">
+                        <select class="selectbox" onchange="selectBoxFilterHandler(event.target.value, '${
+                          filter.slug
+                        }')">
                           ${filter.options
                             .sort((a, b) => b - a)
                             .map(
@@ -323,13 +327,21 @@ window.addEventListener("load", () => {
 
   const justPhotoController = document.querySelector("#just_photo_controll");
   const exchangeController = document.querySelector("#exchange_controll");
-  const min__price__selectbox = document.getElementById("min-price-selectbox")
-  const max__price__selectbox = document.getElementById("max-price-selectbox") 
+  const minPriceSelectBox = document.querySelector("#min-price-selectbox");
+  const maxPriceSelectBox = document.querySelector("#max-price-selectbox");
 
-  const applyFilters = (posts) => {
-    console.log("Filter");
+  const applyFilters = () => {
     let filteredPosts = backupPosts;
 
+    for (const slug in appliedFilters) {
+      filteredPosts = filteredPosts.filter((post) =>
+        post.dynamicFields.some(
+          (field) => field.slug === slug && field.data === appliedFilters[slug]
+        )
+      );
+    }
+
+    console.log("filteredPosts ->", filteredPosts);
 
     if (justPhotoController.checked) {
       filteredPosts = filteredPosts.filter((post) => post.pics.length);
@@ -339,41 +351,45 @@ window.addEventListener("load", () => {
       filteredPosts = filteredPosts.filter((post) => post.exchange);
     }
 
-    //! handle filter price max & min
-    const minPrice = min__price__selectbox.value
-    const maxPrice = max__price__selectbox.value
-
-    if(minPrice !== "default") {
-      if(maxPrice !== "default") {
-        filteredPosts = filteredPosts.filter(post => post.price > minPrice && post.price < maxPrice)
+    // min / max price filtering
+    const minPrice = minPriceSelectBox.value;
+    const maxPrice = maxPriceSelectBox.value;
+    if (maxPrice !== "default") {
+      if (minPrice !== "default") {
+        filteredPosts = filteredPosts.filter(
+          (post) => post.price >= minPrice && post.price <= maxPrice
+        );
+      } else {
+        filteredPosts = filteredPosts.filter((post) => post.price <= maxPrice);
       }
-      else {
-         filteredPosts = filteredPosts.filter(post =>  post.price <= maxPrice)
-      }
-    }
-    else {
-      if(minPrice !== "default") {
-         filteredPosts = filteredPosts.filter(post =>  post.price >= minPrice)
-
+    } else {
+      if (minPrice !== "default") {
+        filteredPosts = filteredPosts.filter((post) => post.price >= minPrice);
       }
     }
+
     generatePosts(filteredPosts);
   };
 
-  min__price__selectbox.addEventListener("change" , () => {
-    applyFilters()
-  })
-  max__price__selectbox.addEventListener("change" , () => {
-    applyFilters()
-  })  
-  justPhotoController.addEventListener("change", () => {
+  minPriceSelectBox?.addEventListener("change", (event) => {
     applyFilters();
   });
 
-  exchangeController.addEventListener("change", () => {
+  maxPriceSelectBox?.addEventListener("change", (event) => {
     applyFilters();
   });
 
-  
+  justPhotoController.addEventListener("change", (event) => {
+    applyFilters();
+  });
 
+  exchangeController.addEventListener("change", (event) => {
+    applyFilters();
+  });
+
+  window.selectBoxFilterHandler = (value, slug) => {
+    appliedFilters[slug] = value;
+
+    applyFilters();
+  };
 });

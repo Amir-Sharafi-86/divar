@@ -28,12 +28,6 @@ const removeParamFromUrl = (param) => {
   location.reload();
 };
 
-const getAndShowCityName = () => {
- let showCityName =  getFromLocalStorage("cities")
- const header_city_title = document.getElementById("header-city-title")
-  header_city_title.innerHTML = showCityName[0].name;
-}
-
 const calcuteRelativeTimeDifference = (createdAt) => {
   const currentTime = new Date();
   const createdTime = new Date(createdAt);
@@ -68,5 +62,4 @@ export {
   removeParamFromUrl,
   showModal,
   hideModal,
-  getAndShowCityName
 };
