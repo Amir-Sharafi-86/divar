@@ -13,13 +13,13 @@ window.addEventListener("load", () => {
   const loadingContainer = document.querySelector("#loading-container");
 
   const cities = getFromLocalStorage("cities");
-
+  let changesPost = null;
   getPosts(cities[0].id).then((response) => {
-    loadingContainer.style.display = "none";
 
     const posts = response.data.posts;
-
+    changesPost = response.data.posts;      
     generatePosts(posts);
+    
   });
 
   const generatePosts = (posts) => {
@@ -87,7 +87,6 @@ window.addEventListener("load", () => {
 
   getPostCategories().then((categories) => {
     const categoriesContainer = document.querySelector("#categories-container");
-    loadingContainer.style.display = "none";
 
     categoriesContainer.innerHTML = "";
 
@@ -308,6 +307,19 @@ window.addEventListener("load", () => {
     searchInput.value = searchValue;
     removeSearchValueIcon.style.display = "block";
   }
+
+  const exchange_controll = document.getElementById("exchange_controll")
+
+  exchange_controll.addEventListener("change" , () => {
+
+    if(exchange_controll.checked) {
+      const filterInChangesPosts = changesPost;
+      const  resultFilterInChangesPosts =  filterInChangesPosts.filter(post => post.exchange === true)
+      const postsContainer = document.querySelector("#posts-container");
+      postsContainer.innerHTML  = ""
+      generatePosts(resultFilterInChangesPosts)
+    }
+  })
 
   removeSearchValueIcon.addEventListener("click", () => {
     removeParamFromUrl("value");

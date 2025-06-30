@@ -5,7 +5,10 @@ window.addEventListener("load", () => {
   getAndShowSocials();
 
   const globalSearchInput = document.querySelector("#global_search_input");
-
+  const header__searchbar__dropdown = document.querySelector("#header__searchbar-dropdown")
+  const overlay = document.querySelector(".searchbar__modal-overlay")
+  console.log(overlay);
+  
   globalSearchInput?.addEventListener("keyup", (event) => {
     if (event.keyCode === 13) {
       event.preventDefault();
@@ -15,4 +18,11 @@ window.addEventListener("load", () => {
       }
     }
   });
+
+  globalSearchInput.addEventListener("click" , () => {
+    header__searchbar__dropdown.classList.add("header__searchbar-dropdown--active")
+  })
+  overlay?.addEventListener("click" , () => {
+    header__searchbar__dropdown.classList.remove("header__searchbar-dropdown--active")
+  })
 });
