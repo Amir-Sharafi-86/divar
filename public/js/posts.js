@@ -19,8 +19,9 @@ window.addEventListener("load", () => {
 
   getPosts(cities[0].id).then((response) => {
     loadingContainer.style.display = "none";
-
     posts = response.data.posts;
+    console.log(posts);
+    
     backupPosts = response.data.posts;
 
     generatePosts(posts);
@@ -346,6 +347,15 @@ window.addEventListener("load", () => {
       if(maxPrice !== "default") {
         filteredPosts = filteredPosts.filter(post => post.price > minPrice && post.price < maxPrice)
       }
+      else {
+         filteredPosts = filteredPosts.filter(post =>  post.price <= maxPrice)
+      }
+    }
+    else {
+      if(minPrice !== "default") {
+         filteredPosts = filteredPosts.filter(post =>  post.price >= minPrice)
+
+      }
     }
     generatePosts(filteredPosts);
   };
@@ -363,4 +373,7 @@ window.addEventListener("load", () => {
   exchangeController.addEventListener("change", () => {
     applyFilters();
   });
+
+  
+
 });

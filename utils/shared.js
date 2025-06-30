@@ -1,11 +1,10 @@
 import { getUrlParam } from "./utils.js";
-
 const baseUrl = "https://divarapi.liara.run";
 
 const getAllCities = async () => {
   const res = await fetch(`${baseUrl}/v1/location`);
   const cities = await res.json();
-
+  
   return cities;
 };
 
@@ -41,7 +40,7 @@ const getPosts = async (citiesIDs) => {
 
   const res = await fetch(url);
   const posts = await res.json();
-
+  
   return posts;
 };
 
@@ -58,4 +57,5 @@ export {
   getAndShowSocials,
   getPosts,
   getPostCategories,
+  
 };

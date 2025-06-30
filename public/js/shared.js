@@ -4,18 +4,17 @@ import {
   getUrlParam,
   hideModal,
   showModal,
+  getAndShowCityName
 } from "../../utils/utils.js";
 
 window.addEventListener("load", () => {
   getAndShowSocials();
-
+  getAndShowCityName();
   const globalSearchInput = document.querySelector("#global_search_input");
-  const mostSearchedContainer = document.querySelector("#most_searched");
   const searchbarModalOverlay = document.querySelector(
     ".searchbar__modal-overlay"
   );
 
-  const mostSearchKeyWords = ["ماشین", "ساعت", "موبایل", "لپ تاپ", "تلویزیون"];
 
   globalSearchInput?.addEventListener("keyup", (event) => {
     if (event.keyCode === 13) {
@@ -27,22 +26,22 @@ window.addEventListener("load", () => {
     }
   });
 
-  mostSearchKeyWords.forEach((keyword) => {
-    const categoryID = getUrlParam("categoryID");
+  // mostSearchKeyWords.forEach((keyword) => {
+  //   const categoryID = getUrlParam("categoryID");
 
-    let href = `posts.html?value=${keyword}${
-      categoryID ? `&categoryID=${categoryID}` : ""
-    }`;
+  //   let href = `posts.html?value=${keyword}${
+  //     categoryID ? `&categoryID=${categoryID}` : ""
+  //   }`;
 
-    mostSearchedContainer.insertAdjacentHTML(
-      "beforeend",
-      `
-        <li class="header__searchbar-dropdown-item">
-          <a href="${href}" class="header__searchbar-dropdown-link">${keyword}</a>
-        </li>
-      `
-    );
-  });
+  //   mostSearchedContainer.insertAdjacentHTML(
+  //     "beforeend",
+  //     `
+  //       <li class="header__searchbar-dropdown-item">
+  //         <a href="${href}" class="header__searchbar-dropdown-link">${keyword}</a>
+  //       </li>
+  //     `
+  //   );
+  // });
 
   globalSearchInput?.addEventListener("click", () => {
     showModal(
