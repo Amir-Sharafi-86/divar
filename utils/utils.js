@@ -43,6 +43,16 @@ const calcuteRelativeTimeDifference = (createdAt) => {
   }
 };
 
+const showModal = (id, className) => {
+  const element = document.querySelector(`#${id}`);
+  element?.classList.add(className);
+};
+
+const hideModal = (id, className) => {
+  const element = document.querySelector(`#${id}`);
+  element?.classList.remove(className);
+};
+
 export {
   saveInLocalStorage,
   getFromLocalStorage,
@@ -50,4 +60,6 @@ export {
   getUrlParam,
   calcuteRelativeTimeDifference,
   removeParamFromUrl,
+  showModal,
+  hideModal,
 };

@@ -1,14 +1,22 @@
 import { getAndShowSocials } from "../../utils/shared.js";
-import { addParamToUrl } from "../../utils/utils.js";
+import {
+  addParamToUrl,
+  getUrlParam,
+  hideModal,
+  showModal,
+} from "../../utils/utils.js";
 
 window.addEventListener("load", () => {
   getAndShowSocials();
 
   const globalSearchInput = document.querySelector("#global_search_input");
-  const header__searchbar__dropdown = document.querySelector("#header__searchbar-dropdown")
-  const overlay = document.querySelector(".searchbar__modal-overlay")
-  console.log(overlay);
-  
+  const mostSearchedContainer = document.querySelector("#most_searched");
+  const searchbarModalOverlay = document.querySelector(
+    ".searchbar__modal-overlay"
+  );
+
+  const mostSearchKeyWords = ["ماشین", "ساعت", "موبایل", "لپ تاپ", "تلویزیون"];
+
   globalSearchInput?.addEventListener("keyup", (event) => {
     if (event.keyCode === 13) {
       event.preventDefault();
@@ -19,10 +27,34 @@ window.addEventListener("load", () => {
     }
   });
 
-  globalSearchInput.addEventListener("click" , () => {
-    header__searchbar__dropdown.classList.add("header__searchbar-dropdown--active")
-  })
-  overlay?.addEventListener("click" , () => {
-    header__searchbar__dropdown.classList.remove("header__searchbar-dropdown--active")
-  })
+  mostSearchKeyWords.forEach((keyword) => {
+    const categoryID = getUrlParam("categoryID");
+
+    let href = `posts.html?value=${keyword}${
+      categoryID ? `&categoryID=${categoryID}` : ""
+    }`;
+
+    mostSearchedContainer.insertAdjacentHTML(
+      "beforeend",
+      `
+        <li class="header__searchbar-dropdown-item">
+          <a href="${href}" class="header__searchbar-dropdown-link">${keyword}</a>
+        </li>
+      `
+    );
+  });
+
+  globalSearchInput?.addEventListener("click", () => {
+    showModal(
+      "header__searchbar-dropdown",
+      "header__searchbar-dropdown--active"
+    );
+  });
+
+  searchbarModalOverlay?.addEventListener("click", () => {
+    hideModal(
+      "header__searchbar-dropdown",
+      "header__searchbar-dropdown--active"
+    );
+  });
 });

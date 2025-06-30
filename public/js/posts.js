@@ -13,17 +13,24 @@ window.addEventListener("load", () => {
   const loadingContainer = document.querySelector("#loading-container");
 
   const cities = getFromLocalStorage("cities");
-  let changesPost = null;
-  getPosts(cities[0].id).then((response) => {
 
-    const posts = response.data.posts;
-    changesPost = response.data.posts;      
+  let posts = null;
+  let backupPosts = null;
+
+  getPosts(cities[0].id).then((response) => {
+    loadingContainer.style.display = "none";
+
+    posts = response.data.posts;
+    backupPosts = response.data.posts;
+
     generatePosts(posts);
-    
   });
 
   const generatePosts = (posts) => {
     const postsContainer = document.querySelector("#posts-container");
+
+    postsContainer.innerHTML = "";
+
     if (posts.length) {
       posts.forEach((post) => {
         const date = calcuteRelativeTimeDifference(post.createdAt);
@@ -87,6 +94,7 @@ window.addEventListener("load", () => {
 
   getPostCategories().then((categories) => {
     const categoriesContainer = document.querySelector("#categories-container");
+    loadingContainer.style.display = "none";
 
     categoriesContainer.innerHTML = "";
 
@@ -308,20 +316,35 @@ window.addEventListener("load", () => {
     removeSearchValueIcon.style.display = "block";
   }
 
-  const exchange_controll = document.getElementById("exchange_controll")
-
-  exchange_controll.addEventListener("change" , () => {
-
-    if(exchange_controll.checked) {
-      const filterInChangesPosts = changesPost;
-      const  resultFilterInChangesPosts =  filterInChangesPosts.filter(post => post.exchange === true)
-      const postsContainer = document.querySelector("#posts-container");
-      postsContainer.innerHTML  = ""
-      generatePosts(resultFilterInChangesPosts)
-    }
-  })
-
   removeSearchValueIcon.addEventListener("click", () => {
     removeParamFromUrl("value");
+  });
+
+  const justPhotoController = document.querySelector("#just_photo_controll");
+  const exchangeController = document.querySelector("#exchange_controll");
+
+  const applyFilters = (posts) => {
+    console.log("Filter");
+    let filteredPosts = backupPosts;
+
+    console.log("FilteredPosts ->", filteredPosts);
+
+    if (justPhotoController.checked) {
+      filteredPosts = filteredPosts.filter((post) => post.pics.length);
+    }
+
+    if (exchangeController.checked) {
+      filteredPosts = filteredPosts.filter((post) => post.exchange);
+    }
+
+    generatePosts(filteredPosts);
+  };
+
+  justPhotoController.addEventListener("change", (event) => {
+    applyFilters(posts);
+  });
+
+  exchangeController.addEventListener("change", (event) => {
+    applyFilters(posts);
   });
 });
