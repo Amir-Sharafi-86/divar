@@ -322,12 +322,13 @@ window.addEventListener("load", () => {
 
   const justPhotoController = document.querySelector("#just_photo_controll");
   const exchangeController = document.querySelector("#exchange_controll");
+  const min__price__selectbox = document.getElementById("min-price-selectbox")
+  const max__price__selectbox = document.getElementById("max-price-selectbox") 
 
   const applyFilters = (posts) => {
     console.log("Filter");
     let filteredPosts = backupPosts;
 
-    console.log("FilteredPosts ->", filteredPosts);
 
     if (justPhotoController.checked) {
       filteredPosts = filteredPosts.filter((post) => post.pics.length);
@@ -337,14 +338,29 @@ window.addEventListener("load", () => {
       filteredPosts = filteredPosts.filter((post) => post.exchange);
     }
 
+    //! handle filter price max & min
+    const minPrice = min__price__selectbox.value
+    const maxPrice = max__price__selectbox.value
+
+    if(minPrice !== "default") {
+      if(maxPrice !== "default") {
+        filteredPosts = filteredPosts.filter(post => post.price > minPrice && post.price < maxPrice)
+      }
+    }
     generatePosts(filteredPosts);
   };
 
-  justPhotoController.addEventListener("change", (event) => {
-    applyFilters(posts);
+  min__price__selectbox.addEventListener("change" , () => {
+    applyFilters()
+  })
+  max__price__selectbox.addEventListener("change" , () => {
+    applyFilters()
+  })  
+  justPhotoController.addEventListener("change", () => {
+    applyFilters();
   });
 
-  exchangeController.addEventListener("change", (event) => {
-    applyFilters(posts);
+  exchangeController.addEventListener("change", () => {
+    applyFilters();
   });
 });
