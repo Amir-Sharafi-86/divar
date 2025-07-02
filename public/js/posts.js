@@ -13,12 +13,19 @@ window.addEventListener("load", () => {
   const loadingContainer = document.querySelector("#loading-container");
 
   const cities = getFromLocalStorage("cities");
+  const citiesIDs = cities.map((city) => city.id).join("|");
 
   let posts = null;
   let backupPosts = null;
   let appliedFilters = {}; // key-value karkard: 90 / tolid: 1396
 
-  getPosts(cities[0].id).then((response) => {
+  if (cities.length === 1) {
+    document.title = `دیوار ${cities[0].title} - نیازمندی‌ های رایگان، آگهی‌های خرید، فروش نو و دست دوم و کارکرده، استخدام و خدمات`;
+  } else {
+    document.title = `دیوار ${cities.length} شهر - نیازمندی‌ های رایگان، آگهی‌های خرید، فروش نو و دست دوم و کارکرده، استخدام و خدمات`;
+  }
+
+  getPosts(citiesIDs).then((response) => {
     loadingContainer.style.display = "none";
 
     posts = response.data.posts;
@@ -41,7 +48,7 @@ window.addEventListener("load", () => {
           "beforeend",
           `
             <div class="col-4">
-              <a href="post.html/id=${post._id}" class="product-card">
+              <a href="post.html?id=${post._id}" class="product-card">
                 <div class="product-card__right">
                   <div class="product-card__right-top">
                     <p class="product-card__link">${post.title}</p>

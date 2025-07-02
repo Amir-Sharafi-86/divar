@@ -13,6 +13,13 @@ const getAllCities = async () => {
   return cities;
 };
 
+const getAllLocations = async () => {
+  const res = await fetch(`${baseUrl}/v1/location`);
+  const respose = await res.json();
+
+  return respose.data;
+};
+
 const getAndShowSocials = async () => {
   const socialMediaContainer = document.querySelector("#footer__social-media");
   const res = await fetch(`${baseUrl}/v1/social`);
@@ -75,11 +82,22 @@ const getPostCategories = async () => {
   return response.data.categories;
 };
 
+const getPostDetails = async () => {
+  const postID = getUrlParam("id");
+
+  const res = await fetch(`${baseUrl}/v1/post/${postID}`);
+  const response = await res.json();
+
+  return response.data.post;
+};
+
 export {
   baseUrl,
   getAllCities,
+  getAllLocations,
   getAndShowSocials,
   getPosts,
   getPostCategories,
   getAndShowHeaderCityLocation,
+  getPostDetails,
 };

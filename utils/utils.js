@@ -53,6 +53,20 @@ const hideModal = (id, className) => {
   element?.classList.remove(className);
 };
 
+const showSwal = (title, icon, buttons, callback) => {
+  swal({
+    title,
+    icon,
+    buttons,
+  }).then((result) => {
+    callback(result);
+  });
+};
+
+const isLogin = () => {
+  return false;
+};
+
 export {
   saveInLocalStorage,
   getFromLocalStorage,
@@ -62,4 +76,6 @@ export {
   removeParamFromUrl,
   showModal,
   hideModal,
+  isLogin,
+  showSwal,
 };
